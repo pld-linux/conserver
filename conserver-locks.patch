@@ -619,3 +619,17 @@ diff -Naur conserver-8.1.9/conserver/readcfg.c conserver-8.1.9-p/conserver/readc
  	if (c->reinitoncc == FLAGUNKNOWN)
  	    c->reinitoncc = FLAGFALSE;
  	if (c->striphigh == FLAGUNKNOWN)
+--- conserver-8.1.9-p/conserver.cf/conserver.cf.man	Wed Jul 14 07:28:42 2004
++++ conserver-8.1.9/conserver.cf/conserver.cf.man	Sat Aug  7 00:34:36 2004
+@@ -774,6 +774,11 @@
+ Default is
+ .BR !ondemand .
+ .TP
++.B lock
++Lock the device using UUCP-style locks.
++Default is
++.BR !lock .
++.TP
+ .B striphigh
+ Strip the high bit off all data coming from this console and all clients
+ connected to this console before processing occurs.
