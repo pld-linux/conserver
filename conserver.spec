@@ -19,6 +19,8 @@ BuildRequires:	automake
 BuildRequires:	openssl-devel
 BuildRequires:	libwrap-devel
 BuildRequires:	pam-devel
+PreReq:		rc-scripts
+Requires(post,preun):	/sbin/chkconfig
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_sysconfdir	/etc/conserver
