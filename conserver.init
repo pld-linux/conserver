@@ -1,0 +1,66 @@
+#!/bin/sh
+#
+# conserver	This shell script takes care of starting and stopping conserver.
+# chkconfig:	2345 85 15
+# processname:	conserver
+# description:	Console Server
+# pidfile:	/var/run/conserver.pid
+# config:	/etc/sysconfig/conserver
+
+# Source function library
+. /etc/rc.d/init.d/functions
+
+# Get service config
+[ -f /etc/sysconfig/conserver ] && . /etc/sysconfig/conserver
+
+RETVAL=0
+# See how we were called.
+case "$1" in
+  start)
+	# Check if the service is already running?
+	if [ ! -f /var/lock/subsys/conserver ]; then
+		msg_starting "conserver"
+		OPTIONS="-d"
+		[ -n "$LISTEN_IPADDR" ] && OPTIONS="$OPTIONS -M$LISTEN_IPADDR"
+		[ -n "$LISTEN_PORT" ] && OPTIONS="$OPTIONS -p$LISTEN_PORT"
+		daemon conserver $OPTIONS $CMDLINE_OPTIONS < /dev/null
+		RETVAL=$?
+		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/conserver
+	else
+		msg_already_running "conserver"
+	fi
+	;;
+  stop)
+	if [ -f /var/lock/subsys/conserver ]; then
+		msg_stopping "conserver"
+		killproc conserver
+		rm -f /var/lock/subsys/conserver >/dev/null 2>&1
+	else
+		msg_not_running "conserver"
+	fi	
+	;;
+  reload|force-reload)
+  	if [ -f /var/lock/subsys/conserver ]; then
+		msg_reloading "conserver"
+		killproc conserver -HUP
+		RETVAL=$?
+	else
+		msg_not_running "conserver"
+		exit 7
+	fi
+	;;
+  restart)
+	$0 stop
+	$0 start
+	exit $?
+	;;
+  status)
+	status conserver
+	exit $?
+	;;
+  *)
+	msg_usage "$0 {start|stop|restart|reload|force-reload|status}"
+	exit 3
+esac
+
+exit $RETVAL

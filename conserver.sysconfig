@@ -1,0 +1,11 @@
+# Customized setings for conserver
+
+# Nice level for conserver
+SERVICE_RUN_NICE_LEVEL="0"
+
+# Network settings
+LISTEN_IPADDR="127.0.0.1"
+LISTEN_PORT="782"
+
+# Other options
+CMDLINE_OPTIONS=""

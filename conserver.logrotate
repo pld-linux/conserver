@@ -1,0 +1,13 @@
+/var/log/conserver {
+    olddir /var/log/archiv
+    postrotate
+	/bin/killall -HUP conserver
+    endscript
+}
+
+/var/log/conserver.d/* {
+    olddir /var/log/archiv/conserver.d
+    postrotate
+	/bin/killall -HUP conserver
+    endscript
+}
