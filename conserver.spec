@@ -20,6 +20,8 @@ BuildRequires:	libwrap-devel
 BuildRequires:	pam-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
+%define		_sysconfdir	/etc/conserver
+
 %description
 Conserver is an application that allows multiple users to watch a
 serial console at the same time.  It can log the data, allows users
@@ -52,12 +54,18 @@ podstawow± funkcjonalno¶æ.
 %install
 rm -rf $RPM_BUILD_ROOT
 
-install -d $RPM_BUILD_ROOT/etc/{rc.d/init.d,sysconfig,logrotate.d} \
+install -d $RPM_BUILD_ROOT/etc/{rc.d/init.d,sysconfig,logrotate.d,conserver} \
 	$RPM_BUILD_ROOT/var/log/{conserver.d,archiv/conserver.d}
+
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
 mv $RPM_BUILD_ROOT%{_datadir}/examples/conserver examples
+
+install examples/conserver.cf $RPM_BUILD_ROOT%{_sysconfdir}
+touch $RPM_BUILD_ROOT%{_sysconfdir}/conserver.passwd
+touch $RPM_BUILD_ROOT%{_sysconfdir}/console.cf
+
 rm -f examples/conserver.rc
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/conserver
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/sysconfig/conserver
@@ -92,4 +100,6 @@ fi
 %attr(640,root,root) %config(noreplace) %verify(not size mtime md5) /etc/logrotate.d/*
 %attr(750,root,root) %dir /var/log/conserver.d
 %attr(750,root,root) %dir /var/log/archiv/conserver.d
+%dir /etc/conserver
+%attr(640,root,root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/*
 %{_mandir}/man*/*
