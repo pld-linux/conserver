@@ -1,15 +1,14 @@
-
 # TODO: smart .init/.sysconfig, maybe a default configuration
-
+#
 Summary:	Console server
 Summary(pl):	Serwer konsoli
 Name:		conserver
-Version:	8.1.0
+Version:	8.1.1
 Release:	1
 License:	BSD-like
 Group:		Daemons
 Source0:	http://www.conserver.com/%{name}-%{version}.tar.gz
-# Source0-md5:	7f945f69a52db4d28e6e4163e29c72e0
+# Source0-md5:	d2641597713768cb62f09f1d94f95ef1
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 Source3:	%{name}.logrotate
