@@ -3,18 +3,21 @@
 Summary:	Console server
 Summary(pl):	Serwer konsoli
 Name:		conserver
-Version:	8.1.1
+Version:	8.1.9
 Release:	1
 License:	BSD-like
 Group:		Daemons
 Source0:	http://www.conserver.com/%{name}-%{version}.tar.gz
-# Source0-md5:	d2641597713768cb62f09f1d94f95ef1
+# Source0-md5:	7f4e613cbe5ebdd61ef9c01d7e8a05b8
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 Source3:	%{name}.logrotate
 URL:		http://www.conserver.com/
 BuildRequires:	autoconf
 BuildRequires:	automake
+BuildRequires:	openssl-devel
+BuildRequires:	libwrap-devel
+BuildRequires:	pam-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -39,7 +42,11 @@ podstawow± funkcjonalno¶æ.
 %{__autoconf}
 %{__autoheader}
 %configure \
-	--with-master=localhost
+	--with-master=localhost \
+	--with-extmsgs \
+	--with-libwrap \
+	--with-openssl \
+	--with-pam
 %{__make}
 
 %install
