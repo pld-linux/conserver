@@ -5,11 +5,14 @@ Summary:	Console server
 Summary(pl):	Serwer konsoli
 Name:		conserver
 Version:	8.1.0
-Release:	0.1
+Release:	1
 License:	BSD-like
 Group:		Daemons
 Source0:	http://www.conserver.com/%{name}-%{version}.tar.gz
 # Source0-md5:	7f945f69a52db4d28e6e4163e29c72e0
+Source1:	%{name}.init
+Source2:	%{name}.sysconfig
+Source3:	%{name}.logrotate
 URL:		http://www.conserver.com/
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -36,23 +39,51 @@ podstawow± funkcjonalno¶æ.
 %{__aclocal}
 %{__autoconf}
 %{__autoheader}
-%configure
+%configure \
+	--with-master=localhost
 %{__make}
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
+install -d $RPM_BUILD_ROOT/etc/{rc.d/init.d,sysconfig,logrotate.d} \
+	$RPM_BUILD_ROOT/var/log/{conserver.d,archiv/conserver.d}
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
 mv $RPM_BUILD_ROOT%{_datadir}/examples/conserver examples
+rm -f examples/conserver.rc
+install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/conserver
+install %{SOURCE2} $RPM_BUILD_ROOT/etc/sysconfig/conserver
+install %{SOURCE3} $RPM_BUILD_ROOT/etc/logrotate.d/conserver
 
 %clean
 rm -rf $RPM_BUILD_ROOT
+
+%post
+/sbin/chkconfig --add conserver
+if [ -f /var/lock/subsys/conserver ]; then
+        /etc/rc.d/init.d/conserver restart 1>&2
+else
+        echo "Run \"/etc/rc.d/init.d/conserver start\" to start conserver daemon."
+fi
+
+%preun
+if [ "$1" = "0" ]; then
+        if [ -f /var/lock/subsys/conserver ]; then
+                /etc/rc.d/init.d/conserver stop 1>&2
+        fi
+        /sbin/chkconfig --del conserver
+fi
 
 %files
 %defattr(644,root,root,755)
 %doc CHANGES FAQ README TODO examples LICENSE
 %attr(755,root,root) %{_bindir}/*
 %attr(755,root,root) %{_sbindir}/*
+%attr(754,root,root) /etc/rc.d/init.d/conserver
+%attr(640,root,root) %config(noreplace) %verify(not size mtime md5) /etc/sysconfig/*
+%attr(640,root,root) %config(noreplace) %verify(not size mtime md5) /etc/logrotate.d/*
+%attr(750,root,root) %dir /var/log/conserver.d
+%attr(750,root,root) %dir /var/log/archiv/conserver.d
 %{_mandir}/man*/*
