@@ -25,7 +25,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
 Conserver is an application that allows multiple users to watch a
-serial console at the same time.  It can log the data, allows users
+serial console at the same time. It can log the data, allows users
 to take write-access of a console (one at a time), and has a
 variety of bells and whistles to accentuate that basic
 functionality.
@@ -80,17 +80,17 @@ rm -rf $RPM_BUILD_ROOT
 %post
 /sbin/chkconfig --add conserver
 if [ -f /var/lock/subsys/conserver ]; then
-        /etc/rc.d/init.d/conserver restart 1>&2
+	/etc/rc.d/init.d/conserver restart 1>&2
 else
-        echo "Run \"/etc/rc.d/init.d/conserver start\" to start conserver daemon."
+	echo "Run \"/etc/rc.d/init.d/conserver start\" to start conserver daemon."
 fi
 
 %preun
 if [ "$1" = "0" ]; then
-        if [ -f /var/lock/subsys/conserver ]; then
-                /etc/rc.d/init.d/conserver stop 1>&2
-        fi
-        /sbin/chkconfig --del conserver
+	if [ -f /var/lock/subsys/conserver ]; then
+		/etc/rc.d/init.d/conserver stop 1>&2
+	fi
+	/sbin/chkconfig --del conserver
 fi
 
 %files
