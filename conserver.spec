@@ -3,12 +3,12 @@
 Summary:	Console server
 Summary(pl):	Serwer konsoli
 Name:		conserver
-Version:	8.1.11
+Version:	8.1.12
 Release:	1
 License:	BSD-like
 Group:		Daemons
 Source0:	http://www.conserver.com/%{name}-%{version}.tar.gz
-# Source0-md5:	94259cd71f38e94b3f247768e3bc731f
+# Source0-md5:	1fb356224f018625be5c3d35529a4ac6
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 Source3:	%{name}.logrotate
