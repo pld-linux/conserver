@@ -607,9 +607,9 @@ diff -Naur conserver-8.1.9/conserver/readcfg.c conserver-8.1.9-p/conserver/readc
  	pCEmatch->autoreinit = c->autoreinit;
  	pCEmatch->unloved = c->unloved;
 +	pCEmatch->lock = c->lock;
+ 	pCEmatch->inituid = c->inituid;
+ 	pCEmatch->initgid = c->initgid;
  	while (pCEmatch->aliases != (NAMES *)0) {
- 	    NAMES *name;
- 	    name = pCEmatch->aliases->next;
 @@ -2881,6 +2885,8 @@
  #endif
  	if (c->ondemand == FLAGUNKNOWN)
