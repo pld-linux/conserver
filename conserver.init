@@ -37,7 +37,7 @@ case "$1" in
 		rm -f /var/lock/subsys/conserver >/dev/null 2>&1
 	else
 		msg_not_running "conserver"
-	fi	
+	fi
 	;;
   reload|force-reload)
   	if [ -f /var/lock/subsys/conserver ]; then
