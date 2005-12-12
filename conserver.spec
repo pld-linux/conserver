@@ -16,21 +16,20 @@ Patch0:		%{name}-locks.patch
 URL:		http://www.conserver.com/
 BuildRequires:	autoconf
 BuildRequires:	automake
-BuildRequires:	openssl-devel
 BuildRequires:	libwrap-devel
+BuildRequires:	openssl-devel
 BuildRequires:	pam-devel
-PreReq:		rc-scripts
 Requires(post,preun):	/sbin/chkconfig
+Requires:	rc-scripts
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_sysconfdir	/etc/conserver
 
 %description
 Conserver is an application that allows multiple users to watch a
-serial console at the same time. It can log the data, allows users
-to take write-access of a console (one at a time), and has a
-variety of bells and whistles to accentuate that basic
-functionality.
+serial console at the same time. It can log the data, allows users to
+take write-access of a console (one at a time), and has a variety of
+bells and whistles to accentuate that basic functionality.
 
 %description -l pl
 Conserver jest aplikacj±, która umo¿liwia kilku u¿ytkownikom naraz
@@ -101,10 +100,10 @@ fi
 %attr(755,root,root) %{_bindir}/*
 %attr(755,root,root) %{_sbindir}/*
 %attr(754,root,root) /etc/rc.d/init.d/conserver
-%attr(640,root,root) %config(noreplace) %verify(not size mtime md5) /etc/sysconfig/*
-%attr(640,root,root) %config(noreplace) %verify(not size mtime md5) /etc/logrotate.d/*
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/*
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/logrotate.d/*
 %attr(750,root,root) %dir /var/log/conserver.d
 %attr(750,root,root) %dir /var/log/archiv/conserver.d
-%dir /etc/conserver
-%attr(640,root,root) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/*
+%dir %{_sysconfdir}
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/*
 %{_mandir}/man*/*
