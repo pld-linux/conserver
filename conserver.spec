@@ -19,6 +19,7 @@ BuildRequires:	automake
 BuildRequires:	libwrap-devel
 BuildRequires:	openssl-devel
 BuildRequires:	pam-devel
+BuildRequires:	rpmbuild(macros) >= 1.268
 Requires(post,preun):	/sbin/chkconfig
 Requires:	rc-scripts
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -80,17 +81,11 @@ rm -rf $RPM_BUILD_ROOT
 
 %post
 /sbin/chkconfig --add conserver
-if [ -f /var/lock/subsys/conserver ]; then
-	/etc/rc.d/init.d/conserver restart 1>&2
-else
-	echo "Run \"/etc/rc.d/init.d/conserver start\" to start conserver daemon."
-fi
+%service conserver restart "conserver daemon"
 
 %preun
 if [ "$1" = "0" ]; then
-	if [ -f /var/lock/subsys/conserver ]; then
-		/etc/rc.d/init.d/conserver stop 1>&2
-	fi
+	%service conserver stop
 	/sbin/chkconfig --del conserver
 fi
 
