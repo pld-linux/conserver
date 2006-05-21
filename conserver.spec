@@ -4,7 +4,7 @@ Summary:	Console server
 Summary(pl):	Serwer konsoli
 Name:		conserver
 Version:	8.1.12
-Release:	1
+Release:	2
 License:	BSD-like
 Group:		Daemons
 Source0:	http://www.conserver.com/%{name}-%{version}.tar.gz
