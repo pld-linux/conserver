@@ -12,6 +12,7 @@ Source0:	http://www.conserver.com/%{name}-%{version}.tar.gz
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 Source3:	%{name}.logrotate
+Source4:	%{name}.pam
 Patch0:		%{name}-locks.patch
 URL:		http://www.conserver.com/
 BuildRequires:	autoconf
@@ -49,6 +50,7 @@ podstawow± funkcjonalno¶æ.
 %{__autoheader}
 %configure \
 	--with-master=localhost \
+	--with-port=782 \
 	--with-extmsgs \
 	--with-libwrap \
 	--with-openssl \
@@ -59,7 +61,7 @@ podstawow± funkcjonalno¶æ.
 %install
 rm -rf $RPM_BUILD_ROOT
 
-install -d $RPM_BUILD_ROOT/etc/{rc.d/init.d,sysconfig,logrotate.d,conserver} \
+install -d $RPM_BUILD_ROOT/etc/{rc.d/init.d,sysconfig,logrotate.d,conserver,pam.d} \
 	$RPM_BUILD_ROOT/var/log/{conserver.d,archiv/conserver.d}
 
 %{__make} install \
@@ -75,6 +77,7 @@ rm -f examples/conserver.rc
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/conserver
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/sysconfig/conserver
 install %{SOURCE3} $RPM_BUILD_ROOT/etc/logrotate.d/conserver
+install %{SOURCE4} $RPM_BUILD_ROOT/etc/pam.d/conserver
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -95,6 +98,7 @@ fi
 %attr(755,root,root) %{_bindir}/*
 %attr(755,root,root) %{_sbindir}/*
 %attr(754,root,root) /etc/rc.d/init.d/conserver
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/pam.d/conserver
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/*
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/logrotate.d/*
 %attr(750,root,root) %dir /var/log/conserver.d
