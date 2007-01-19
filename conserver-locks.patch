@@ -1,6 +1,6 @@
-diff -Naur conserver-8.1.9/configure.in conserver-8.1.9-p/configure.in
---- conserver-8.1.9/configure.in	Sun May 30 18:50:32 2004
-+++ conserver-8.1.9-p/configure.in	Fri Aug  6 23:23:02 2004
+diff -urN -x '*.orig' -x '*~' conserver-8.1.15.org/configure.in conserver-8.1.15/configure.in
+--- conserver-8.1.15.org/configure.in	2006-05-28 19:30:34.000000000 +0200
++++ conserver-8.1.15/configure.in	2007-01-19 22:29:33.683813250 +0100
 @@ -16,6 +16,7 @@
  AH_TEMPLATE([HAVE_OPENSSL], [have openssl support])
  AH_TEMPLATE([HAVE_DMALLOC], [have dmalloc support])
@@ -9,7 +9,7 @@ diff -Naur conserver-8.1.9/configure.in conserver-8.1.9-p/configure.in
  AH_TEMPLATE([TRUST_REVERSE_DNS],[Defined if we trust reverse DNS])
  AH_TEMPLATE([USE_EXTENDED_MESSAGES],[Defined if we produce extended messages])
  AH_TEMPLATE([USE_UNIX_DOMAIN_SOCKETS],[Defined if we use Unix domain sockets])
-@@ -359,7 +360,13 @@
+@@ -375,7 +376,13 @@
  	[AC_MSG_RESULT(yes)
  	 AC_DEFINE(HAVE_SA_LEN)],
  	[AC_MSG_RESULT(no)])
@@ -24,26 +24,9 @@ diff -Naur conserver-8.1.9/configure.in conserver-8.1.9-p/configure.in
  
  dnl ### Host specific checks. ######################################
  AC_CANONICAL_HOST
-diff -Naur conserver-8.1.9/conserver/Makefile.in conserver-8.1.9-p/conserver/Makefile.in
---- conserver-8.1.9/conserver/Makefile.in	Tue Feb 10 01:32:28 2004
-+++ conserver-8.1.9-p/conserver/Makefile.in	Fri Aug  6 22:11:26 2004
-@@ -28,11 +28,11 @@
- ### Makefile rules - no user-servicable parts below
- 
- CONSERVER_OBJS = access.o client.o consent.o group.o main.o master.o \
--		 readcfg.o fallback.o cutil.o
-+		 readcfg.o fallback.o cutil.o locks.o
- CONSERVER_HDRS = ../config.h $(top_srcdir)/compat.h $(srcdir)/access.h \
- 		 $(srcdir)/client.h $(srcdir)/consent.h $(srcdir)/cutil.h \
- 		 $(srcdir)/group.h $(srcdir)/main.h $(srcdir)/master.h \
--		 $(srcdir)/readcfg.h $(srcdir)/version.h
-+		 $(srcdir)/readcfg.h $(srcdir)/version.h $(srcdir)/locks.h
- 
- ALL = conserver convert
- 
-diff -Naur conserver-8.1.9/conserver/consent.c conserver-8.1.9-p/conserver/consent.c
---- conserver-8.1.9/conserver/consent.c	Thu Jun  3 23:53:59 2004
-+++ conserver-8.1.9-p/conserver/consent.c	Sat Aug  7 00:20:34 2004
+diff -urN -x '*.orig' -x '*~' conserver-8.1.15.org/conserver/consent.c conserver-8.1.15/conserver/consent.c
+--- conserver-8.1.15.org/conserver/consent.c	2006-06-17 04:03:15.000000000 +0200
++++ conserver-8.1.15/conserver/consent.c	2007-01-19 22:29:33.683813250 +0100
 @@ -49,7 +49,7 @@
  #include <access.h>
  #include <readcfg.h>
@@ -52,8 +35,8 @@ diff -Naur conserver-8.1.9/conserver/consent.c conserver-8.1.9-p/conserver/conse
 +#include <locks.h>
  
  BAUD baud[] = {
- #if defined(B115200)
-@@ -655,6 +655,9 @@
+ #if defined(FOR_CYCLADES_TS)
+@@ -733,6 +733,9 @@
  	close(pCE->execSlaveFD);
  	pCE->execSlaveFD = 0;
      }
@@ -63,8 +46,8 @@ diff -Naur conserver-8.1.9/conserver/consent.c conserver-8.1.9-p/conserver/conse
      pCE->fup = 0;
      pCE->nolog = 0;
      pCE->autoReUp = 0;
-@@ -854,6 +857,21 @@
- 	    }
+@@ -1006,6 +1009,21 @@
+ 	    pCE->fup = 1;
  	    break;
  	case DEVICE:
 +	    if (pCE->lock == FLAGTRUE) {
@@ -85,21 +68,21 @@ diff -Naur conserver-8.1.9/conserver/consent.c conserver-8.1.9-p/conserver/conse
  	    if (-1 ==
  		(cofile = open(pCE->device, O_RDWR | O_NONBLOCK, 0600))) {
  
-diff -Naur conserver-8.1.9/conserver/consent.h conserver-8.1.9-p/conserver/consent.h
---- conserver-8.1.9/conserver/consent.h	Wed Jun  2 01:45:47 2004
-+++ conserver-8.1.9-p/conserver/consent.h	Fri Aug  6 22:41:11 2004
-@@ -123,6 +123,7 @@
-     FLAG striphigh;		/* strip high-bit of console data       */
+diff -urN -x '*.orig' -x '*~' conserver-8.1.15.org/conserver/consent.h conserver-8.1.15/conserver/consent.h
+--- conserver-8.1.15.org/conserver/consent.h	2006-05-28 19:27:14.000000000 +0200
++++ conserver-8.1.15/conserver/consent.h	2007-01-19 22:30:12.482238000 +0100
+@@ -133,6 +133,7 @@
      FLAG autoreinit;		/* auto-reinitialize if failed          */
      FLAG unloved;		/* copy "unloved" data to stdout        */
-+    FLAG lock;			/* lock the device			*/
+     FLAG login;			/* allow logins to the console          */
++    FLAG lock;			/* lock the device                      */
  
      /*** runtime settings ***/
      CONSFILE *fdlog;		/* the local log file                   */
-diff -Naur conserver-8.1.9/conserver/locks.c conserver-8.1.9-p/conserver/locks.c
---- conserver-8.1.9/conserver/locks.c	Thu Jan  1 01:00:00 1970
-+++ conserver-8.1.9-p/conserver/locks.c	Sat Aug  7 00:21:23 2004
-@@ -0,0 +1,435 @@
+diff -urN -x '*.orig' -x '*~' conserver-8.1.15.org/conserver/locks.c conserver-8.1.15/conserver/locks.c
+--- conserver-8.1.15.org/conserver/locks.c	1970-01-01 01:00:00.000000000 +0100
++++ conserver-8.1.15/conserver/locks.c	2007-01-19 22:37:58.587367750 +0100
+@@ -0,0 +1,439 @@
 +#ident "$Id$ Copyright (c) Gert Doering / Paul Sutcliffe Jr."
 +
 +/* large parts of the code in this module are taken from the
@@ -109,6 +92,10 @@ diff -Naur conserver-8.1.9/conserver/locks.c conserver-8.1.9-p/conserver/locks.c
 + */
 +/* adopted from mgetty 1.1.30 for conserver
 + * by Sebastian Zagrodzki, s.zagrodzki@net.icm.edu.pl */
++
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#endif
 +
 +#include <stdio.h>
 +#include <unistd.h>
@@ -535,9 +522,9 @@ diff -Naur conserver-8.1.9/conserver/locks.c conserver-8.1.9-p/conserver/locks.c
 +}
 +	
 +#endif /* !SVR4 */
-diff -Naur conserver-8.1.9/conserver/locks.h conserver-8.1.9-p/conserver/locks.h
---- conserver-8.1.9/conserver/locks.h	Thu Jan  1 01:00:00 1970
-+++ conserver-8.1.9-p/conserver/locks.h	Fri Aug  6 23:12:48 2004
+diff -urN -x '*.orig' -x '*~' conserver-8.1.15.org/conserver/locks.h conserver-8.1.15/conserver/locks.h
+--- conserver-8.1.15.org/conserver/locks.h	1970-01-01 01:00:00.000000000 +0100
++++ conserver-8.1.15/conserver/locks.h	2007-01-19 22:29:33.687813500 +0100
 @@ -0,0 +1,30 @@
 +#ifndef	_locks_h
 +#define LOCK	"/var/lock/LCK..%s"
@@ -547,7 +534,7 @@ diff -Naur conserver-8.1.9/conserver/locks.h conserver-8.1.9-p/conserver/locks.h
 +#define SUCCESS 0
 +#define FAIL -1
 +#define NO_LOCK 0
-+typedef void    RETSIGTYPE;
++
 +
 +int             makelock (char *device);
 +// int             makelock_file ( char * lockname );
@@ -569,10 +556,10 @@ diff -Naur conserver-8.1.9/conserver/locks.h conserver-8.1.9-p/conserver/locks.h
 +int lock_write_pid (int fd);
 +
 +#endif
-diff -Naur conserver-8.1.9/conserver/main.c conserver-8.1.9-p/conserver/main.c
---- conserver-8.1.9/conserver/main.c	Wed Jul 14 07:28:42 2004
-+++ conserver-8.1.9-p/conserver/main.c	Fri Aug  6 22:38:37 2004
-@@ -952,6 +952,9 @@
+diff -urN -x '*.orig' -x '*~' conserver-8.1.15.org/conserver/main.c conserver-8.1.15/conserver/main.c
+--- conserver-8.1.15.org/conserver/main.c	2006-04-03 15:32:08.000000000 +0200
++++ conserver-8.1.15/conserver/main.c	2007-01-19 22:29:33.687813500 +0100
+@@ -977,6 +977,9 @@
  		       "DumpDataStructures():  motd=%s, idletimeout=%d, idlestring=%s",
  		       EMPTYSTR(pCE->motd), pCE->idletimeout,
  		       EMPTYSTR(pCE->idlestring)));
@@ -582,35 +569,61 @@ diff -Naur conserver-8.1.9/conserver/main.c conserver-8.1.9-p/conserver/main.c
  	    if (pCE->ro) {
  		CONSENTUSERS *u;
  		for (u = pCE->ro; u != (CONSENTUSERS *)0; u = u->next) {
-diff -Naur conserver-8.1.9/conserver/readcfg.c conserver-8.1.9-p/conserver/readcfg.c
---- conserver-8.1.9/conserver/readcfg.c	Wed Jul 14 07:28:42 2004
-+++ conserver-8.1.9-p/conserver/readcfg.c	Fri Aug  6 22:42:11 2004
-@@ -1401,6 +1401,7 @@
- 	c->reinitoncc = FLAGUNKNOWN;
+diff -urN -x '*.orig' -x '*~' conserver-8.1.15.org/conserver/Makefile.in conserver-8.1.15/conserver/Makefile.in
+--- conserver-8.1.15.org/conserver/Makefile.in	2005-06-06 17:03:06.000000000 +0200
++++ conserver-8.1.15/conserver/Makefile.in	2007-01-19 22:29:33.683813250 +0100
+@@ -30,11 +30,11 @@
+ ### Makefile rules - no user-servicable parts below
+ 
+ CONSERVER_OBJS = access.o client.o consent.o group.o main.o master.o \
+-		 readcfg.o fallback.o cutil.o
++		 readcfg.o fallback.o cutil.o locks.o
+ CONSERVER_HDRS = ../config.h $(top_srcdir)/compat.h $(srcdir)/access.h \
+ 		 $(srcdir)/client.h $(srcdir)/consent.h $(srcdir)/cutil.h \
+ 		 $(srcdir)/group.h $(srcdir)/main.h $(srcdir)/master.h \
+-		 $(srcdir)/readcfg.h $(srcdir)/version.h
++		 $(srcdir)/readcfg.h $(srcdir)/version.h $(srcdir)/locks.h
+ 
+ ALL = conserver convert
+ 
+diff -urN -x '*.orig' -x '*~' conserver-8.1.15.org/conserver/readcfg.c conserver-8.1.15/conserver/readcfg.c
+--- conserver-8.1.15.org/conserver/readcfg.c	2006-03-20 17:47:03.000000000 +0100
++++ conserver-8.1.15/conserver/readcfg.c	2007-01-19 22:32:03.149154250 +0100
+@@ -699,6 +699,8 @@
+ 	c->unloved = d->unloved;
+     if (d->login != FLAGUNKNOWN)
+ 	c->login = d->login;
++    if (d->lock != FLAGUNKNOWN)
++	c->lock = d->lock;
+     if (d->host != (char *)0) {
+ 	if (c->host != (char *)0)
+ 	    free(c->host);
+@@ -1656,6 +1658,7 @@
  	c->autoreinit = FLAGUNKNOWN;
  	c->unloved = FLAGUNKNOWN;
+ 	c->login = FLAGUNKNOWN;
 +	c->lock = FLAGUNKNOWN;
  	return;
      }
  
-@@ -1436,6 +1437,8 @@
- 	    c->autoreinit = negative ? FLAGFALSE : FLAGTRUE;
- 	else if (strcasecmp("unloved", token) == 0)
+@@ -1693,6 +1696,8 @@
  	    c->unloved = negative ? FLAGFALSE : FLAGTRUE;
+ 	else if (strcasecmp("login", token) == 0)
+ 	    c->login = negative ? FLAGFALSE : FLAGTRUE;
 +	else if (strcasecmp("lock", token) == 0)
 +	    c->lock = negative ? FLAGFALSE : FLAGTRUE;
  	else if (isMaster)
  	    Error("invalid option `%s' [%s:%d]", token, file, line);
      }
-@@ -2711,6 +2714,7 @@
- 	pCEmatch->reinitoncc = c->reinitoncc;
+@@ -3007,6 +3012,7 @@
  	pCEmatch->autoreinit = c->autoreinit;
  	pCEmatch->unloved = c->unloved;
+ 	pCEmatch->login = c->login;
 +	pCEmatch->lock = c->lock;
  	pCEmatch->inituid = c->inituid;
  	pCEmatch->initgid = c->initgid;
  	while (pCEmatch->aliases != (NAMES *)0) {
-@@ -2881,6 +2885,8 @@
+@@ -3185,6 +3191,8 @@
  #endif
  	if (c->ondemand == FLAGUNKNOWN)
  	    c->ondemand = FLAGFALSE;
@@ -619,9 +632,10 @@ diff -Naur conserver-8.1.9/conserver/readcfg.c conserver-8.1.9-p/conserver/readc
  	if (c->reinitoncc == FLAGUNKNOWN)
  	    c->reinitoncc = FLAGFALSE;
  	if (c->striphigh == FLAGUNKNOWN)
---- conserver-8.1.9-p/conserver.cf/conserver.cf.man	Wed Jul 14 07:28:42 2004
-+++ conserver-8.1.9/conserver.cf/conserver.cf.man	Sat Aug  7 00:34:36 2004
-@@ -774,6 +774,11 @@
+diff -urN -x '*.orig' -x '*~' conserver-8.1.15.org/conserver.cf/conserver.cf.man conserver-8.1.15/conserver.cf/conserver.cf.man
+--- conserver-8.1.15.org/conserver.cf/conserver.cf.man	2006-12-31 03:03:03.000000000 +0100
++++ conserver-8.1.15/conserver.cf/conserver.cf.man	2007-01-19 22:29:33.691813750 +0100
+@@ -842,6 +842,11 @@
  Default is
  .BR !ondemand .
  .TP
