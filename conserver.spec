@@ -1,7 +1,7 @@
 # TODO: smart .init/.sysconfig, maybe a default configuration
 #
 Summary:	Console server
-Summary(pl):	Serwer konsoli
+Summary(pl.UTF-8):   Serwer konsoli
 Name:		conserver
 Version:	8.1.15
 Release:	1
@@ -33,12 +33,12 @@ serial console at the same time. It can log the data, allows users to
 take write-access of a console (one at a time), and has a variety of
 bells and whistles to accentuate that basic functionality.
 
-%description -l pl
-Conserver jest aplikacj±, która umo¿liwia kilku u¿ytkownikom naraz
-ogl±daæ logi na konsoli szeregowej. Mo¿e zapisywaæ zebrane dane,
-pozwalaæ u¿ytkownikom na pe³ne korzystanie z konsoli (ale tylko
-jednemu naraz), oraz posiada mnóstwo dodatków rozszerzaj±cych tê
-podstawow± funkcjonalno¶æ.
+%description -l pl.UTF-8
+Conserver jest aplikacjÄ…, ktÃ³ra umoÅ¼liwia kilku uÅ¼ytkownikom naraz
+oglÄ…daÄ‡ logi na konsoli szeregowej. MoÅ¼e zapisywaÄ‡ zebrane dane,
+pozwalaÄ‡ uÅ¼ytkownikom na peÅ‚ne korzystanie z konsoli (ale tylko
+jednemu naraz), oraz posiada mnÃ³stwo dodatkÃ³w rozszerzajÄ…cych tÄ™
+podstawowÄ… funkcjonalnoÅ›Ä‡.
 
 %prep
 %setup -q
