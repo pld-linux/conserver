@@ -1,7 +1,7 @@
 # TODO: smart .init/.sysconfig, maybe a default configuration
 #
 Summary:	Console server
-Summary(pl.UTF-8):   Serwer konsoli
+Summary(pl.UTF-8):	Serwer konsoli
 Name:		conserver
 Version:	8.1.15
 Release:	1
