@@ -102,7 +102,7 @@ fi
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/*
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/logrotate.d/*
 %attr(750,root,root) %dir /var/log/conserver.d
-%attr(750,root,root) %dir /var/log/archiv/conserver.d
+%attr(750,root,root) %dir /var/log/archive/conserver.d
 %dir %{_sysconfdir}
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/*
 %{_mandir}/man*/*
