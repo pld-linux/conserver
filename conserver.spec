@@ -62,7 +62,7 @@ podstawową funkcjonalność.
 rm -rf $RPM_BUILD_ROOT
 
 install -d $RPM_BUILD_ROOT/etc/{rc.d/init.d,sysconfig,logrotate.d,conserver,pam.d} \
-	$RPM_BUILD_ROOT/var/log/{conserver.d,archiv/conserver.d}
+	$RPM_BUILD_ROOT/var/log/{conserver.d,archive/conserver.d}
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
