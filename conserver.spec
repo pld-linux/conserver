@@ -13,6 +13,7 @@ Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 Source3:	%{name}.logrotate
 Source4:	%{name}.pam
+Source5:	%{name}.service
 Patch0:		%{name}-locks.patch
 URL:		http://www.conserver.com/
 BuildRequires:	autoconf
@@ -20,9 +21,10 @@ BuildRequires:	automake
 BuildRequires:	libwrap-devel
 BuildRequires:	openssl-devel
 BuildRequires:	pam-devel
-BuildRequires:	rpmbuild(macros) >= 1.268
+BuildRequires:	rpmbuild(macros) >= 1.644
 Requires(post,preun):	/sbin/chkconfig
 Requires:	rc-scripts
+Requires:	systemd-units >= 38
 Conflicts:	logrotate < 3.7-4
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -63,7 +65,8 @@ podstawową funkcjonalność.
 rm -rf $RPM_BUILD_ROOT
 
 install -d $RPM_BUILD_ROOT/etc/{rc.d/init.d,sysconfig,logrotate.d,conserver,pam.d} \
-	$RPM_BUILD_ROOT/var/log/{conserver.d,archive/conserver.d}
+	$RPM_BUILD_ROOT/var/log/{conserver.d,archive/conserver.d} \
+	$RPM_BUILD_ROOT%{systemdunitdir}
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
@@ -79,6 +82,7 @@ install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/conserver
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/sysconfig/conserver
 install %{SOURCE3} $RPM_BUILD_ROOT/etc/logrotate.d/conserver
 install %{SOURCE4} $RPM_BUILD_ROOT/etc/pam.d/conserver
+install %{SOURCE5} $RPM_BUILD_ROOT%{systemdunitdir}/%{name}.service
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -86,12 +90,17 @@ rm -rf $RPM_BUILD_ROOT
 %post
 /sbin/chkconfig --add conserver
 %service conserver restart "conserver daemon"
+%systemd_post %{name}.service
 
 %preun
 if [ "$1" = "0" ]; then
 	%service conserver stop
 	/sbin/chkconfig --del conserver
 fi
+%systemd_preun %{name}.service
+
+%postun
+%systemd_reload
 
 %files
 %defattr(644,root,root,755)
@@ -107,3 +116,4 @@ fi
 %dir %{_sysconfdir}
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/*
 %{_mandir}/man*/*
+%{systemdunitdir}/%{name}.service
