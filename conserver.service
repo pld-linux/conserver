@@ -3,7 +3,7 @@ Description=Console Server
 After=network.target
 
 [Service]
-Environment=LISTEN_IPADDR=127.0.0.1 LISTEN_PORT=782
+Environment=LISTEN_IPADDR=0.0.0.0 LISTEN_PORT=782
 EnvironmentFile=-/etc/sysconfig/conserver
 ExecStart=/usr/sbin/conserver -M${LISTEN_IPADDR} -p${LISTEN_PORT} $CMDLINE_OPTIONS
 ExecReload=/bin/kill -HUP $MAINPID
