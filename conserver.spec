@@ -4,7 +4,7 @@ Summary:	Console server
 Summary(pl.UTF-8):	Serwer konsoli
 Name:		conserver
 Version:	8.1.18
-Release:	3
+Release:	4
 License:	BSD-like
 Group:		Daemons
 Source0:	http://www.conserver.com/%{name}-%{version}.tar.gz
@@ -15,6 +15,7 @@ Source3:	%{name}.logrotate
 Source4:	%{name}.pam
 Source5:	%{name}.service
 Patch0:		%{name}-locks.patch
+Patch1:		openssl.patch
 URL:		http://www.conserver.com/
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -46,6 +47,7 @@ podstawową funkcjonalność.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 %build
 %{__aclocal}
