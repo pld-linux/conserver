@@ -3,19 +3,17 @@
 Summary:	Console server
 Summary(pl.UTF-8):	Serwer konsoli
 Name:		conserver
-Version:	8.1.18
-Release:	4
+Version:	8.2.6
+Release:	1
 License:	BSD-like
 Group:		Daemons
-Source0:	http://www.conserver.com/%{name}-%{version}.tar.gz
-# Source0-md5:	93d1c38df71b4e3fd5d8f7ad6fc186bb
+Source0:	https://github.com/bstansell/conserver/releases/download/v%{version}/%{name}-%{version}.tar.gz
+# Source0-md5:	f04d6ab6172d81db24886b12f224940c
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 Source3:	%{name}.logrotate
 Source4:	%{name}.pam
 Source5:	%{name}.service
-Patch0:		%{name}-locks.patch
-Patch1:		openssl.patch
 URL:		http://www.conserver.com/
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -46,13 +44,8 @@ podstawową funkcjonalność.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
 
 %build
-%{__aclocal}
-%{__autoconf}
-%{__autoheader}
 %configure \
 	--with-master=localhost \
 	--with-port=782 \
@@ -75,16 +68,16 @@ install -d $RPM_BUILD_ROOT/etc/{rc.d/init.d,sysconfig,logrotate.d,conserver,pam.
 
 mv $RPM_BUILD_ROOT%{_datadir}/examples/conserver examples
 
-install examples/conserver.cf $RPM_BUILD_ROOT%{_sysconfdir}
+cp -p examples/conserver.cf $RPM_BUILD_ROOT%{_sysconfdir}
 touch $RPM_BUILD_ROOT%{_sysconfdir}/conserver.passwd
 touch $RPM_BUILD_ROOT%{_sysconfdir}/console.cf
 
 rm -f examples/conserver.rc
-install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/conserver
-install %{SOURCE2} $RPM_BUILD_ROOT/etc/sysconfig/conserver
-install %{SOURCE3} $RPM_BUILD_ROOT/etc/logrotate.d/conserver
-install %{SOURCE4} $RPM_BUILD_ROOT/etc/pam.d/conserver
-install %{SOURCE5} $RPM_BUILD_ROOT%{systemdunitdir}/%{name}.service
+cp -p %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/conserver
+cp -p %{SOURCE2} $RPM_BUILD_ROOT/etc/sysconfig/conserver
+cp -p %{SOURCE3} $RPM_BUILD_ROOT/etc/logrotate.d/conserver
+cp -p %{SOURCE4} $RPM_BUILD_ROOT/etc/pam.d/conserver
+cp -p %{SOURCE5} $RPM_BUILD_ROOT%{systemdunitdir}/%{name}.service
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -106,9 +99,11 @@ fi
 
 %files
 %defattr(644,root,root,755)
-%doc CHANGES FAQ README TODO examples LICENSE
+%doc CHANGES FAQ README.md TODO examples LICENSES
 %attr(755,root,root) %{_bindir}/*
 %attr(755,root,root) %{_sbindir}/*
+%dir %{_libdir}/conserver
+%attr(755,root,root) %{_libdir}/conserver/convert
 %attr(754,root,root) /etc/rc.d/init.d/conserver
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/pam.d/conserver
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/*
