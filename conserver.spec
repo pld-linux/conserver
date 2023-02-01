@@ -4,7 +4,7 @@ Summary:	Console server
 Summary(pl.UTF-8):	Serwer konsoli
 Name:		conserver
 Version:	8.2.6
-Release:	1
+Release:	2
 License:	BSD-like
 Group:		Daemons
 Source0:	https://github.com/bstansell/conserver/releases/download/v%{version}/%{name}-%{version}.tar.gz
